@@ -20,4 +20,4 @@ sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
 #wget https://github.com/vernesong/OpenClash/archive/master.zip  #下载OpenClash
 #unzip master.zip  #解压
 #cp -r OpenClash-master/luci-app-openclash package  #复制OpenClash软件包到OpenWrt
-git clone https://github.com/garypang13/luci-app-dnsfilter.git ./package/lean/luci-app-dnsfilter
+#git clone https://github.com/garypang13/luci-app-dnsfilter.git ./package/lean/luci-app-dnsfilter
