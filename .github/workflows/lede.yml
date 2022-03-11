@@ -138,7 +138,7 @@ jobs:
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
-          ### **适用于Amlogic盒子的OpenWrt固件**
+          ### 
           * **固件信息：**
           默认IP: 192.168.1.1
           默认用户名: root
