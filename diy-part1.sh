@@ -21,12 +21,3 @@
 #unzip master.zip  #解压
 #cp -r OpenClash-master/luci-app-openclash package  #复制OpenClash软件包到OpenWrt
 #git clone https://github.com/garypang13/luci-app-dnsfilter.git ./package/lean/luci-app-dnsfilter
-
-## 解除系统限制
-ulimit -u 10000
-ulimit -n 4096
-ulimit -d unlimited
-ulimit -m unlimited
-ulimit -s unlimited
-ulimit -t unlimited
-ulimit -v unlimited
