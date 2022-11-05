@@ -164,7 +164,7 @@ jobs:
         echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
         touch release.txt
         echo "功能介绍：简约 最基本的功能。" >> release.txt
-        echo "[固件源码](https://github.com/immortalwrt/immortalwrt/tree/master)" >> release.txt
+        echo "[固件源码](https://github.com/coolsnowwolf/lede/tree/master)" >> release.txt
         echo "感谢所有为openwrt无私奉献的大佬们" >> release.txt
         echo "📥 固件下载" >> release.txt
         [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [国内NN网盘](${{ steps.cowtransfer.outputs.url }})" >> release.txt
@@ -176,7 +176,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
-        name: ${{ env.FILE_TIME }} 「 openwrt-Project-X86-64 」
+        name: ${{ env.FILE_TIME }} 「 openwrt-X86-64 」
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
