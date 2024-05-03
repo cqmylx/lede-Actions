@@ -147,8 +147,17 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
-        [ ${UPLOAD_GOFILE} = true && ${{ steps.gofile.outputs.url }} ] && echo "🔗 [GoFile](${{ steps.gofile.outputs.url }})" >> release.txt
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "
+        💻 架构: ${{ matrix.ARCHITECTURE }}
+
+        📂 源码: ${{ env.REPO_URL }}
+
+        🌳 分支: 带passwall
+
+        ⏱️ 编译时间: $(date +"%Y年%m月%d日%H时%M分") 
+        
+        " >> release.txt
+           echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 发布至release
       uses: softprops/action-gh-release@master
