@@ -10,10 +10,10 @@ echo "src-git openclash https://github.com/vernesong/openclash" >> "feeds.conf.d
 echo "src-git helloworld https://github.com/fw876/helloworld.git" >> "feeds.conf.default"
 
 # 添加PowerOff关机插件
-git clone https://github.com/esirplayground/luci-app-poweroff.git package/luci-app-poweroff
+#git clone https://github.com/esirplayground/luci-app-poweroff.git package/luci-app-poweroff
 
 # 添加OpenTomcat主题
-git clone https://github.com/Leo-Jo-My/luci-theme-opentomcat.git package/luci-theme-opentomcat
+#git clone https://github.com/Leo-Jo-My/luci-theme-opentomcat.git package/luci-theme-opentomcat
 
 # 添加PassWall插件
 echo "src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main" >> "feeds.conf.default"
