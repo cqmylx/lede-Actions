@@ -1,7 +1,7 @@
 # 此脚本用处是：添加第三方插件
 #git clone https://github.com/ujincn/smartdns.git ./package/lean/smartdns
 #git clone https://github.com/ujincn/luci-app-smartdns-compat.git ./package/lean/luci-app-smartdns
-git clone -b lede https://github.com/pymumu/luci-app-smartdns.git package/luci-app-smartdns
+#git clone -b lede https://github.com/pymumu/luci-app-smartdns.git package/luci-app-smartdns
 
 # 添加OpenClash插件
 echo "src-git openclash https://github.com/vernesong/openclash" >> "feeds.conf.default"
