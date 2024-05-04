@@ -32,8 +32,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-22.04
 
     steps:
     - name: 检查项目分支
