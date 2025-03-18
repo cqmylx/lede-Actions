@@ -1,26 +1,24 @@
 #
-# https://github.com/P3TERX/Actions-OpenWrt
-#
-# File: .github/workflows/openwrt-bulder.yml
-# Description: Build OpenWrt using GitHub Actions
-#
-# Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
 #
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
 #
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+#
 
-name: Build OpenWrt
+name: Build LEDE
 
 on:
   repository_dispatch:
   workflow_dispatch:
   #schedule:
-  #- cron: 0 21 */7 * * 
+  #  - cron: 0 16 4,9,14,19,24,28,31 * *
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  REPO_URL: https://github.com/openwrt/openwrt
+  REPO_BRANCH: main
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: lede.config
   DIY_P1_SH: diy-part1.sh
@@ -38,6 +36,20 @@ jobs:
     - name: 检查项目分支
       uses: actions/checkout@main
 
+    - name: 释放磁盘空间
+      uses: jlumbroso/free-disk-space@main
+      with:
+      # this might remove tools that are actually needed,
+      # if set to "true" but frees about 6 GB
+        tool-cache: true
+      # all of these default to true, but feel free to set to
+      # "false" if necessary for your workflow
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        swap-storage: true
+        
     - name: 安装编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -45,40 +57,40 @@ jobs:
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
         sudo docker image prune --all --force
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install $(curl -fsSL raw.githubusercontent.com/cqmylx/lede-Actions/master/depends)
+        sudo -E apt-get -qq install $(curl -fsSL raw.githubusercontent.com/cqmylx/LEDE-C/main/depends)
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-
-    - name: 下载固件源码
+        
+    - name: 克隆源码
       working-directory: /workdir
       run: |
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        
+
     - name: Cache
       uses: cqmylx/cachewrtbuild@main
       with:
         ccache: 'true'
         prefix: ${{ github.workspace }}/openwrt    
 
-    - name: 加载自定义设置
+    - name: 加载自定义feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
-    - name: 下载插件
+    - name: 更新feeds
       run: cd openwrt && ./scripts/feeds update -a
 
-    - name: 读取插件
+    - name: 安装feeds
       run: cd openwrt && ./scripts/feeds install -a
-
-    - name: 更改设置
+    
+    - name: 加载自定义配置
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
@@ -86,7 +98,7 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: 下载安装包
+    - name: 下载软件包
       id: package
       run: |
         cd openwrt
@@ -95,7 +107,7 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-    - name: 开始编译固件
+    - name: 编译固件
       id: compile
       run: |
         cd openwrt
@@ -106,60 +118,50 @@ jobs:
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: 查看磁盘使用情况
+    - name: 检查磁盘空间
       if: (!cancelled())
       run: df -hT
 
-    - name: 上传bin压缩目录
+    - name: 上传bin文件夹
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
 
-    - name: 整理编译好的固件
+    - name: 整理文件
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
         cd openwrt/bin/targets/*/*
-        rm -rf packages && mkdir packages
-        find -name "*esxi-flat.vmdk*" | xargs -i mv -f {} packages
-        find -name "*kernel.bin*" | xargs -i mv -f {} packages
-        find -name "*rootfs*" | xargs -i mv -f {} packages
-        find -name "*.manifest*" | xargs -i mv -f {} packages
-        find -name "*vmlinuz*" | xargs -i mv -f {} packages
-        find -name "*esxi.vmdk*" | xargs -i mv -f {} packages
         rm -rf packages
+        # rm -rf *.buildinfo
+        rm -rf profiles.json
+        rm -rf *.manifest
+        rm -rf *-kernel.bin
+        rm -rf *-rootfs.img
+        rm -rf *-rootfs.img.gz
+        rm -rf sha256sums
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 上传固件到github
+    - name: 上传固件
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: OpenWrt官方_x64_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
-    - name: 创建release标签
+    - name: 生成release标签
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
-        echo "
-        💻 架构: ${{ matrix.ARCHITECTURE }}
+        echo "status=success" >> $GITHUB_OUTPUT
 
-        📂 源码: ${{ env.REPO_URL }}
-
-        🌳 分支: 带passwall
-
-        ⏱️ 编译时间: $(date +"%Y年%m月%d日%H时%M分") 
-        
-        " >> release.txt
-           echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: 发布至release
-      uses: softprops/action-gh-release@master
+    - name: 发布固件
+      uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -168,17 +170,17 @@ jobs:
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
 
-    - name: Delete workflow runs
+    - name: 清理workflow
       uses: Mattraks/delete-workflow-runs@main
       with:
         retain_days: 1
         keep_minimum_runs: 3
 
-    - name: 删除旧的Releases
-      uses: dev-drprasad/delete-older-releases@master
+    - name: 清理Releases
+      uses: dev-drprasad/delete-older-releases@v0.2.1
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 6
+        keep_latest: 3
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
