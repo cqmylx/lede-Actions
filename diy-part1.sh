@@ -22,7 +22,7 @@ echo "src-git nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git;main" >>
 # Add a feed source
 #sed -i '$a src-git lienol https://github.com/Lienol/openwrt-package' feeds.conf.default
 #sed -i '$a src-git istore https://github.com/linkease/istore;main' feeds.conf.default
-git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
+#git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
 #git clone https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
 
 #git clone https://github.com/fw876/helloworld.git package/helloworld
@@ -30,7 +30,7 @@ git clone https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
 #git clone https://github.com/animegasan/luci-app-quickstart package/luci-app-quickstart
 #git clone https://github.com/linkease/istore.git package/istoreos
 #git clone https://github.com/nikkinikki-org/OpenWrt-nikki.git;main package/openwrt-nikki
-rm -rf feeds/luci/applications/luci-app-passwall
+#rm -rf feeds/luci/applications/luci-app-passwall
 git clone https://github.com/xiaorouji/openwrt-passwall.git package/openwrt-passwall
 #git clone https://github.com/xiaorouji/openwrt-passwall.git package/passwall
 #git clone https://github.com/xiaorouji/openwrt-passwall2.git package/passwall2
