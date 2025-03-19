@@ -19,6 +19,7 @@
 
 echo "src-git nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git;main" >> "feeds.conf.default"
 
+
 # Add a feed source
 #sed -i '$a src-git lienol https://github.com/Lienol/openwrt-package' feeds.conf.default
 #sed -i '$a src-git istore https://github.com/linkease/istore;main' feeds.conf.default
@@ -31,7 +32,7 @@ echo "src-git nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git;main" >>
 #git clone https://github.com/linkease/istore.git package/istoreos
 #git clone https://github.com/nikkinikki-org/OpenWrt-nikki.git;main package/openwrt-nikki
 #rm -rf feeds/luci/applications/luci-app-passwall
-git clone https://github.com/xiaorouji/openwrt-passwall.git package/openwrt-passwall
+#git clone https://github.com/xiaorouji/openwrt-passwall.git package/openwrt-passwall
 #git clone https://github.com/xiaorouji/openwrt-passwall.git package/passwall
 #git clone https://github.com/xiaorouji/openwrt-passwall2.git package/passwall2
 #rm -rf feeds/luci/applications/luci-app-smartdns
